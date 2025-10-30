@@ -9,10 +9,18 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [expandedCertificate, setExpandedCertificate] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  console.log('Mobile menu state:', isMobileMenuOpen);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      
+      // Close mobile menu on scroll
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
       
       // Update active section based on scroll position
       const sections = ['hero', 'about', 'skills', 'certificates', 'projects', 'contact'];
@@ -33,7 +41,20 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
 
   function handleAnimationComplete(): void {
     console.log("Letter animation completed!");
@@ -50,6 +71,9 @@ export default function Home() {
         top: offsetPosition,
         behavior: 'smooth'
       });
+      
+      // Close mobile menu after navigation
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -70,15 +94,15 @@ export default function Home() {
   // Certificates data
   const certificates = [
     {
-      title: "Certificate of Participation Bina Desa",
+      title: "Certificate of Participation - Techfest UI/UX 2025",
       image: "/assets/icon/techfest.png",
-      description: "Served as Vice Coordinator of Media Public Relations for Bina Desa BEM FTI",
+      description: "...",
       downloadLink: "assets/icon/techfest.png"
     },
     {
       title: "BEM FTI Organization Certificate",
       image: "/assets/icon/BEMFTI.png",
-      description: "Staff Bidang Humas Prastiwi Yogyakarta 13 Mei 2020 PDIP KABKOTA/KABUPATEN PERIODE 2018",
+      description: "FTI LINK is a project of BEM FTI UPN “Veteran” Yogyakarta. The project establishes BEM FTI's external relations with various agencies and builds a sustainable cooperation network.",
       downloadLink: "/assets/icon/BEMFTI.png"
     },
     {
@@ -116,19 +140,30 @@ export default function Home() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#262626] text-white">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden animate-fadeIn"
+          onClick={() => {
+            console.log('Overlay clicked');
+            setIsMobileMenuOpen(false);
+          }}
+        />
+      )}
+
       {/* Navigation - New Style */}
-      <nav className={`fixed top-0 z-50 w-full bg-neutral-800 transition-all duration-300 ${
+      <nav className={`fixed top-0 left-0 right-0 z-50 bg-neutral-800 transition-all duration-300 ${
         isScrolled ? 'shadow-[0px_2px_9.4px_0px_#ffc4ed]' : ''
       }`}>
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16 h-[114px] flex items-center justify-between gap-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16 h-[80px] sm:h-[100px] lg:h-[114px] flex items-center justify-between gap-4 lg:gap-8">
           {/* Logo */}
-          <div className="w-[178px] h-[68px] flex items-center flex-shrink-0">
+          <div className="w-[120px] sm:w-[150px] lg:w-[178px] h-[48px] sm:h-[58px] lg:h-[68px] flex items-center flex-shrink-0">
             <Image 
               src="/assets/icon/webyla.png" 
               alt="Webyla Logo" 
               width={178} 
               height={68}
-              className="object-contain"
+              className="object-contain w-full h-full"
             />
           </div>
 
@@ -183,65 +218,135 @@ export default function Home() {
           </button>
 
           {/* Mobile Menu Button */}
-          <button className="lg:hidden p-2 hover:bg-gray-700/50 rounded-lg transition-colors">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 flex flex-col justify-center space-y-1">
-              <div className="w-full h-0.5 bg-white transform transition-all duration-300"></div>
-              <div className="w-full h-0.5 bg-white transform transition-all duration-300"></div>
-              <div className="w-full h-0.5 bg-white transform transition-all duration-300"></div>
+          <button 
+            onClick={() => {
+              console.log('Hamburger clicked, current state:', isMobileMenuOpen);
+              setIsMobileMenuOpen(!isMobileMenuOpen);
+            }}
+            className="lg:hidden p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            <div className="w-6 h-6 flex flex-col justify-center space-y-1.5">
+              <div className={`w-full h-0.5 bg-white transform transition-all duration-300 ${
+                isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''
+              }`}></div>
+              <div className={`w-full h-0.5 bg-white transform transition-all duration-300 ${
+                isMobileMenuOpen ? 'opacity-0' : ''
+              }`}></div>
+              <div className={`w-full h-0.5 bg-white transform transition-all duration-300 ${
+                isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
+              }`}></div>
             </div>
           </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <div 
+          className={`lg:hidden absolute top-full left-0 w-full bg-neutral-800 backdrop-blur-md transition-all duration-300 ease-in-out overflow-hidden ${
+            isMobileMenuOpen 
+              ? 'max-h-[600px] opacity-100 shadow-[0px_4px_9.4px_0px_#ffc4ed] border-t border-gray-700/50 pointer-events-auto' 
+              : 'max-h-0 opacity-0 border-t-0 pointer-events-none'
+          }`}
+          style={{ zIndex: 999 }}
+        >
+          <div className="container mx-auto px-4 sm:px-6 py-3">
+            {[
+              { id: 'about', label: 'About' },
+              { id: 'skills', label: 'Skills' },
+              { id: 'certificates', label: 'Certificate' },
+              { id: 'projects', label: 'Projects' },
+            ].map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`w-full text-left px-4 py-3.5 rounded-lg transition-all duration-300 flex items-center justify-between group ${
+                  activeSection === item.id 
+                    ? 'bg-[rgba(255,196,237,0.15)] text-[#ffc4ed]' 
+                    : 'hover:bg-[rgba(255,255,255,0.05)] text-white'
+                }`}
+              >
+                <span className={`text-base sm:text-lg transition-all duration-300 ${
+                  activeSection === item.id ? 'font-bold' : 'font-medium'
+                }`}>
+                  {item.label}
+                </span>
+                {/* Active indicator - Pink dot */}
+                <div className={`w-2.5 h-2.5 rounded-full bg-[#ffc4ed] transition-all duration-300 ${
+                  activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                }`} />
+              </button>
+            ))}
+            
+            {/* Contact Me Button - Mobile */}
+            <button
+              onClick={() => scrollToSection('contact')}
+              className={`w-full mt-2 px-4 py-3.5 rounded-lg transition-all duration-300 flex items-center justify-between group ${
+                activeSection === 'contact' 
+                  ? 'bg-[rgba(255,196,237,0.2)] border-2 border-[#ffc4ed] text-[#ffc4ed]' 
+                  : 'bg-[rgba(255,255,255,0.1)] border-2 border-[rgba(55,55,55,0.5)] hover:bg-[rgba(255,255,255,0.15)] text-white'
+              }`}
+            >
+              <span className={`text-base sm:text-lg font-bold transition-all duration-300`}>
+                Contact Me
+              </span>
+              {/* Active indicator - Pink dot */}
+              <div className={`w-2.5 h-2.5 rounded-full bg-[#ffc4ed] transition-all duration-300 ${
+                activeSection === 'contact' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+              }`} />
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* Enhanced Hero Section */}
-      <section id="hero" className="relative min-h-screen flex items-center pt-[144px] pb-20">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section id="hero" className="relative min-h-screen flex items-center pt-[100px] sm:pt-[120px] lg:pt-[144px] pb-12 sm:pb-16 lg:pb-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6 text-center lg:text-left order-1">
               {/* Greeting, Name & Title - Grouped */}
-              <div className="space-y-1">
+              <div className="space-y-1 sm:space-y-2">
                 {/* Greeting */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 justify-center lg:justify-start">
                   <Image 
                     src="/assets/icon/Hi.png" 
                     alt="Hi" 
                     width={72} 
                     height={36}
-                    className="h-[36px] w-auto object-contain"
+                    className="h-[28px] sm:h-[32px] lg:h-[36px] w-auto object-contain"
                   />
-                  <span className="text-[32px] font-bold">
+                  <span className="text-[20px] sm:text-[26px] lg:text-[32px] font-bold">
                     There! I'am
                   </span>
                 </div>
 
                 {/* Name */}
-                <h1 className="text-[48px] font-bold leading-tight">
+                <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-bold leading-tight">
                   Zahirah Salsabila
                 </h1>
 
                 {/* Title */}
-                <div className="text-[40px] font-bold bg-gradient-to-r from-white to-[#ffc4ed] bg-clip-text text-transparent">
+                <div className="text-[28px] sm:text-[34px] lg:text-[40px] font-bold bg-gradient-to-r from-white to-[#ffc4ed] bg-clip-text text-transparent">
                   UI/UX Designer
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-[19px] text-justify max-w-[472px] leading-relaxed">
+              <p className="text-[15px] sm:text-[17px] lg:text-[19px] text-justify max-w-[472px] leading-relaxed mx-auto lg:mx-0">
                 Welcome to my portfolio! I design clean, user-centered digital experiences that balance visual appeal with functionality. Take a look around and discover how each project showcases my passion for thoughtful design, usability, and solving real user needs.
               </p>
 
               {/* CTA Button & Social Icons */}
-              <div className="flex items-center gap-4 pt-6">
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 sm:pt-6 justify-center lg:justify-start">
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[20px] py-[10px] rounded-[14px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] flex-shrink-0"
+                  className="w-full sm:w-auto bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[20px] py-[10px] rounded-[14px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] flex-shrink-0"
                 >
-                  <span className="text-[19px] font-bold">Contact Me</span>
+                  <span className="text-[17px] sm:text-[19px] font-bold">Contact Me</span>
                 </button>
 
                 {/* Social Icons */}
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center">
                   <a
                     href="https://www.instagram.com/bilazahirah"
                     target="_blank"
@@ -276,9 +381,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right - Lanyard (Overlap dengan navbar) */}
-            <div className="flex justify-center lg:justify-end relative">
-              <div className="animate-float absolute top-[-280px] lg:top-[-350px] scale-35 lg:scale-45">
+            {/* Right - Lanyard (Overlap dengan navbar) - Hidden on Mobile */}
+            <div className="hidden lg:flex justify-center lg:justify-end relative order-2">
+              <div className="animate-float absolute top-[-350px] scale-45">
                 <Lanyard position={[0, 0, 14]} gravity={[0, -40, 0]}/>
               </div>
             </div>
@@ -287,7 +392,7 @@ export default function Home() {
       </section>
 
       {/* Enhanced Skills Bar - Infinite Scrolling */}
-      <section className="py-6 bg-transparent border-y border-gray-700/50 overflow-hidden">
+      <section className="py-4 sm:py-6 bg-transparent border-y border-gray-700/50 overflow-hidden">
         <div className="relative">
           {/* Scrolling Container */}
           <div className="flex animate-scroll whitespace-nowrap">
@@ -304,10 +409,10 @@ export default function Home() {
             ].map((skill, index) => (
               <div 
                 key={`skill-1-${index}`}
-                className="flex items-center mx-8 lg:mx-12"
+                className="flex items-center mx-6 sm:mx-8 lg:mx-12"
               >
-                <span className="text-[#ffc4ed] text-2xl lg:text-3xl">✦</span>
-                <span className="text-lg lg:text-2xl font-bold ml-3">{skill}</span>
+                <span className="text-[#ffc4ed] text-xl sm:text-2xl lg:text-3xl">✦</span>
+                <span className="text-base sm:text-lg lg:text-2xl font-bold ml-2 sm:ml-3">{skill}</span>
               </div>
             ))}
           </div>
@@ -315,24 +420,24 @@ export default function Home() {
       </section>
 
       {/* Enhanced About Section */}
-      <section id="about" className="py-20 relative">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
+      <section id="about" className="py-12 sm:py-16 lg:py-20 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
           {/* Section Title */}
-          <h2 className="text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-16">
+          <h2 className="text-[40px] sm:text-[52px] lg:text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-10 sm:mb-12 lg:mb-16">
             About Me
           </h2>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
             {/* Left - Profile Image */}
             <div className="flex justify-center">
               <div className="relative">
                 {/* Gradient Circle Background */}
-                <div className="absolute inset-0 -m-5">
-                  <div className="w-[387px] h-[387px] rounded-full bg-gradient-to-br from-white to-[#FFC4ED] opacity-80 blur-[20px]" />
+                <div className="absolute inset-0 -m-3 sm:-m-4 lg:-m-5">
+                  <div className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] lg:w-[387px] lg:h-[387px] rounded-full bg-gradient-to-br from-white to-[#FFC4ED] opacity-80 blur-[20px]" />
                 </div>
                 
                 {/* Profile Image Circle */}
-                <div className="relative w-[347px] h-[347px] rounded-full overflow-hidden border-4 border-[#FFC4ED]">
+                <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] lg:w-[347px] lg:h-[347px] rounded-full overflow-hidden border-3 sm:border-4 border-[#FFC4ED]">
                   <Image
                     src="/assets/icon/about.png"
                     alt="about"
@@ -345,26 +450,26 @@ export default function Home() {
             </div>
 
             {/* Right - Content */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Description */}
-              <p className="text-[16px] text-justify leading-relaxed">
+              <p className="text-[14px] sm:text-[15px] lg:text-[16px] text-justify leading-relaxed">
                 {aboutData.description}
               </p>
 
               {/* Download CV Button and Social Icons Row */}
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 sm:gap-6">
                 {/* Download CV Button */}
                 <a
                   href={aboutData.cvLink}
                   download
-                  className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[20px] py-[10px] rounded-[14px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[16px] sm:px-[20px] py-[10px] rounded-[14px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed]"
                 >
-                  <Download className="w-[24px] h-[24px] text-[#FFC4ED]" />
-                  <span className="text-[19px] font-bold">Download CV</span>
+                  <Download className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px] text-[#FFC4ED]" />
+                  <span className="text-[17px] sm:text-[19px] font-bold">Download CV</span>
                 </a>
 
                   {/* Tools/Skills Icons */}
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-3 sm:gap-4 pt-2 sm:pt-4 justify-center">
                   {aboutData.tools.map((tool, index) => {
                     const toolImages: { [key: string]: string } = {
                       "Figma": "/assets/icon/figma.png",
@@ -376,7 +481,7 @@ export default function Home() {
                     return (
                       <div
                         key={index}
-                        className="bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] w-[44px] h-[44px] rounded-[10px] flex items-center justify-center shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] hover:bg-[rgba(255,255,255,0.3)] transition-all"
+                        className="bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] w-[40px] h-[40px] sm:w-[44px] sm:h-[44px] rounded-[10px] flex items-center justify-center shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] hover:bg-[rgba(255,255,255,0.3)] transition-all"
                         title={tool}
                       >
                         <Image
@@ -384,7 +489,7 @@ export default function Home() {
                           alt={tool}
                           width={24}
                           height={24}
-                          className="object-contain"
+                          className="object-contain w-[20px] h-[20px] sm:w-[24px] sm:h-[24px]"
                         />
                       </div>
                     );
@@ -397,78 +502,78 @@ export default function Home() {
       </section>
 
       {/* Enhanced Skills Section */}
-      <section id="skills" className="py-20">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
-          <h2 className="text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-8">
+      <section id="skills" className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+          <h2 className="text-[40px] sm:text-[52px] lg:text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-4 sm:mb-6 lg:mb-8">
             Skills
           </h2>
-          <p className="text-[16px] text-center mb-16 max-w-2xl mx-auto opacity-80">
+          <p className="text-[14px] sm:text-[15px] lg:text-[16px] text-center mb-10 sm:mb-12 lg:mb-16 max-w-2xl mx-auto opacity-80">
             These are the tools I use regularly in my creative and development workflows
           </p>
           
           {/* Horizontal Layout Container */}
-          <div className="flex items-center justify-center gap-8 lg:gap-12 flex-wrap max-w-[1200px] mx-auto">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-8 xl:gap-12 flex-wrap max-w-[1200px] mx-auto">
             {/* VS Code */}
             <div className="group">
-              <div className="w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-4">
+              <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
                   src="/assets/icon/vscode.png"
                   alt="VS Code"
                   width={70}
                   height={70}
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain group-hover:scale-110 transition-transform duration-300 w-full h-full"
                 />
               </div>
             </div>
 
             {/* Figma */}
             <div className="group">
-              <div className="w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-4">
+              <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
                   src="/assets/icon/figma.png"
                   alt="Figma"
                   width={70}
                   height={70}
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain group-hover:scale-110 transition-transform duration-300 w-full h-full"
                 />
               </div>
             </div>
 
             {/* Premiere Pro */}
             <div className="group">
-              <div className="w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-4">
+              <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
                   src="/assets/icon/PremierePro.png"
                   alt="Premiere Pro"
                   width={70}
                   height={70}
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain group-hover:scale-110 transition-transform duration-300 w-full h-full"
                 />
               </div>
             </div>
 
             {/* Canva */}
             <div className="group">
-              <div className="w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-4">
+              <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
                   src="/assets/icon/canva.png"
                   alt="Canva"
                   width={70}
                   height={70}
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain group-hover:scale-110 transition-transform duration-300 w-full h-full"
                 />
               </div>
             </div>
 
             {/* Illustrator */}
             <div className="group">
-              <div className="w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-4">
+              <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
                   src="/assets/icon/Illustrator.png"
                   alt="Illustrator"
                   width={70}
                   height={70}
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain group-hover:scale-110 transition-transform duration-300 w-full h-full"
                 />
               </div>
             </div>
@@ -477,15 +582,15 @@ export default function Home() {
       </section>
 
       {/* Enhanced Certificates Section */}
-      <section id="certificates" className="py-20">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
-          <h2 className="text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-4">
+      <section id="certificates" className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+          <h2 className="text-[40px] sm:text-[52px] lg:text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-2 sm:mb-4">
             Certificates
           </h2>
-          <p className="text-[16px] text-center mb-16 max-w-2xl mx-auto opacity-80">
+          <p className="text-[14px] sm:text-[15px] lg:text-[16px] text-center mb-10 sm:mb-12 lg:mb-16 max-w-2xl mx-auto opacity-80">
             A collection of my certifications that reflect my experiences, achievements, and commitment to continuous learning.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {certificates.map((cert, index) => (
               <CertificateCard 
                 key={index}
@@ -500,21 +605,21 @@ export default function Home() {
       </section>
 
       {/* Enhanced Projects Section */}
-      <section id="projects" className="py-20">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
+      <section id="projects" className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
           <div className="max-w-[1294px] mx-auto">
             {/* Section Title */}
-            <div className="text-center mb-16">
-              <h2 className="text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] mb-4">
+            <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+              <h2 className="text-[40px] sm:text-[52px] lg:text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] mb-2 sm:mb-4">
                 Projects
               </h2>
-              <p className="text-[16px] max-w-[604px] mx-auto opacity-80">
+              <p className="text-[14px] sm:text-[15px] lg:text-[16px] max-w-[604px] mx-auto opacity-80">
                 A showcase of my design and development projects, built with a focus on usability, visual clarity, and real user needs.
               </p>
             </div>
 
             {/* Projects Grid */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {projects.map((project, index) => (
                 <ProjectCard key={index} {...project} />
               ))}
@@ -524,41 +629,41 @@ export default function Home() {
       </section>
 
       {/* Enhanced Contact Section */}
-      <section id="contact" className="py-20">
-        <div className="container mx-auto px-8 lg:px-12 xl:px-16">
-          <h2 className="text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-4">
+      <section id="contact" className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+          <h2 className="text-[40px] sm:text-[52px] lg:text-[64px] font-bold font-['Way_Come'] text-[#ffc4ed] text-center mb-2 sm:mb-4">
             Contact Me
           </h2>
-          <p className="text-[16px] text-center mb-16 max-w-2xl mx-auto opacity-80">
+          <p className="text-[14px] sm:text-[15px] lg:text-[16px] text-center mb-10 sm:mb-12 lg:mb-16 max-w-2xl mx-auto opacity-80">
             Start the conversation to collaborate good relationship and business.
           </p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 max-w-6xl mx-auto">
             <div className="order-2 lg:order-1">
-              <h3 className="text-[32px] font-bold mb-6">Become a Client !</h3>
-              <p className="mb-8 leading-relaxed text-[16px] opacity-80">
+              <h3 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold mb-4 sm:mb-6">Become a Client !</h3>
+              <p className="mb-6 sm:mb-8 leading-relaxed text-[14px] sm:text-[15px] lg:text-[16px] opacity-80">
                 I will be happy to work with you for business and collaborations and deliver outstanding results that will add value to your business.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[
-                  { icon: <Mail className="w-6 h-6" />, text: 'bilazahirah.13@gmail.com', type: 'email' },
-                  { icon: <PhoneCall className="w-6 h-6" />, text: '+62 857-6807-8603', type: 'phone' }
+                  { icon: <Mail className="w-5 h-5 sm:w-6 sm:h-6" />, text: 'bilazahirah.13@gmail.com', type: 'email' },
+                  { icon: <PhoneCall className="w-5 h-5 sm:w-6 sm:h-6" />, text: '+62 857-6807-8603', type: 'phone' }
                 ].map((contact, index) => (
                   <div 
                     key={contact.type}
-                    className="flex items-center space-x-4 p-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] hover:bg-[rgba(255,255,255,0.08)] transition-all"
+                    className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] hover:bg-[rgba(255,255,255,0.08)] transition-all"
                   >
                     <span className="text-[#FFC4ED]">{contact.icon}</span>
-                    <span className="text-[16px]">{contact.text}</span>
+                    <span className="text-[14px] sm:text-[15px] lg:text-[16px] break-all">{contact.text}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-8">
-                <p className="mb-4 text-[16px] opacity-80">Follow Me On</p>
-                <div className="flex space-x-3">
+              <div className="mt-6 sm:mt-8">
+                <p className="mb-3 sm:mb-4 text-[14px] sm:text-[15px] lg:text-[16px] opacity-80">Follow Me On</p>
+                <div className="flex space-x-3 justify-start">
                   {[
                     { icon: <Instagram className="w-5 h-5" />, href: 'https://www.instagram.com/bilazahirah' },
                     { icon: <Linkedin className="w-5 h-5" />, href: 'https://www.linkedin.com/in/zahirahsalsabila' },
-                    { icon: <Github className="w-5 h-5" />, href: 'https://github.com/bilazahirah' },
+                    { icon: <Github className="w-5 h-5" />, href: 'https://github.com/salsabilazahirah' },
                     { icon: <Mail className="w-5 h-5" />, href: 'mailto:bilazahirah.13@gmail.com' }
                   ].map((social, index) => (
                     <a 
@@ -566,7 +671,7 @@ export default function Home() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] w-[44px] h-[44px] rounded-[10px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.3)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed]"
+                      className="bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] w-[40px] h-[40px] sm:w-[44px] sm:h-[44px] rounded-[10px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.3)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed]"
                     >
                       {social.icon}
                     </a>
@@ -575,11 +680,11 @@ export default function Home() {
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <h3 className="text-[32px] font-bold mb-6">Send a Message</h3>
-              <p className="mb-8 text-[16px] opacity-80">
+              <h3 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold mb-4 sm:mb-6">Send a Message</h3>
+              <p className="mb-6 sm:mb-8 text-[14px] sm:text-[15px] lg:text-[16px] opacity-80">
                 Fill out the form below and I'll get back to you as soon as possible.
               </p>
-              <form className="space-y-6">
+              <form className="space-y-4 sm:space-y-6">
                 {[
                   { type: 'text', placeholder: 'Name' },
                   { type: 'email', placeholder: 'Email' }
@@ -588,17 +693,17 @@ export default function Home() {
                     key={field.placeholder}
                     type={field.type}
                     placeholder={field.placeholder}
-                    className="w-full px-6 py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all text-[16px]"
+                    className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all text-[14px] sm:text-[15px] lg:text-[16px]"
                   />
                 ))}
                 <textarea
                   placeholder="Message"
                   rows={4}
-                  className="w-full px-6 py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all resize-none text-[16px]"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all resize-none text-[14px] sm:text-[15px] lg:text-[16px]"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] py-4 rounded-[14px] font-bold hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] text-[19px]"
+                  className="w-full bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] py-3 sm:py-4 rounded-[14px] font-bold hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] text-[17px] sm:text-[19px]"
                 >
                   Send Message
                 </button>
@@ -622,11 +727,22 @@ export default function Home() {
             transform: translateX(-50%);
           }
         }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
         .animate-scroll {
           animation: scroll 20s linear infinite;
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-in-out;
         }
         .perspective-1000 {
           perspective: 1000px;
@@ -676,7 +792,7 @@ function CertificateCard({ title, image, description, downloadLink, index, isExp
   return (
     <div className="bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] overflow-hidden hover:bg-[rgba(255,255,255,0.08)] transition-all">
       {/* Certificate Image */}
-      <div className="rounded-t-[14px] h-48 overflow-hidden relative">
+      <div className="rounded-t-[14px] h-40 sm:h-48 overflow-hidden relative">
         <Image
           src={image}
           alt={title}
@@ -687,23 +803,23 @@ function CertificateCard({ title, image, description, downloadLink, index, isExp
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Title */}
-        <h3 className="font-semibold mb-4 text-[16px] leading-tight">
+        <h3 className="font-semibold mb-3 sm:mb-4 text-[14px] sm:text-[15px] lg:text-[16px] leading-tight">
           {title}
         </h3>
 
         {/* Dropdown Toggle Button */}
         <button
           onClick={handleToggle}
-          className="w-full flex items-center justify-between gap-3 mb-3"
+          className="w-full flex items-center justify-between gap-3"
           type="button"
         >
-          <span className="text-[14px] font-medium opacity-80">
+          <span className="text-[13px] sm:text-[14px] font-medium opacity-80">
             {isExpanded ? 'Hide Details' : 'View Details'}
           </span>
           <div 
-            className={`w-[36px] h-[36px] rounded-full bg-[#FFC4ED] flex items-center justify-center transition-transform duration-300 shadow-[0px_0px_10px_0px_rgba(255,196,237,0.5)] ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-[32px] h-[32px] sm:w-[36px] sm:h-[36px] rounded-full bg-[#FFC4ED] flex items-center justify-center transition-transform duration-300 shadow-[0px_0px_10px_0px_rgba(255,196,237,0.5)] flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
           >
             <svg 
               width="14" 
@@ -736,7 +852,7 @@ function CertificateCard({ title, image, description, downloadLink, index, isExp
         >
           {isExpanded && (
             <div className="pt-3">
-              <p className="text-[14px] text-justify leading-relaxed mb-4 opacity-80">
+              <p className="text-[13px] sm:text-[14px] text-justify leading-relaxed mb-4 opacity-80">
                 {description}
               </p>
 
@@ -744,10 +860,10 @@ function CertificateCard({ title, image, description, downloadLink, index, isExp
               <a
                 href={downloadLink}
                 download
-                className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[16px] py-[10px] rounded-[10px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] w-full justify-center group"
+                className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] px-[14px] sm:px-[16px] py-[10px] rounded-[10px] hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] w-full justify-center group"
               >
-                <Download className="w-[18px] h-[18px] text-[#FFC4ED] group-hover:scale-110 transition-transform" />
-                <span className="text-[14px] font-bold">Download This Certificate</span>
+                <Download className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] text-[#FFC4ED] group-hover:scale-110 transition-transform" />
+                <span className="text-[13px] sm:text-[14px] font-bold">Download This Certificate</span>
               </a>
             </div>
           )}
@@ -762,10 +878,11 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
 
   return (
     <div
-      className="relative h-[365px] cursor-pointer group"
+      className="relative h-[320px] sm:h-[350px] lg:h-[365px] cursor-pointer group"
       style={{ perspective: '1000px' }}
       onMouseEnter={() => setIsFlipped(true)}
       onMouseLeave={() => setIsFlipped(false)}
+      onClick={() => setIsFlipped(!isFlipped)}
     >
       <div 
         className="relative w-full h-full transition-transform duration-700"
@@ -779,7 +896,7 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
           className="absolute inset-0"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="bg-gradient-to-r from-[#313131] to-[#313131] rounded-[20px] p-4 h-full flex flex-col gap-4 overflow-hidden">
+          <div className="bg-gradient-to-r from-[#313131] to-[#313131] rounded-[16px] sm:rounded-[20px] p-3 sm:p-4 h-full flex flex-col gap-3 sm:gap-4 overflow-hidden">
             {/* Gradient overlays */}
             <div className="absolute inset-0 opacity-[0.13] pointer-events-none">
               <div 
@@ -795,7 +912,7 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
             </div>
 
             {/* Thumbnail */}
-            <div className="relative flex-1 rounded-[10px] overflow-hidden">
+            <div className="relative flex-1 rounded-[8px] sm:rounded-[10px] overflow-hidden">
               <img
                 src={thumbnail}
                 alt={title}
@@ -805,11 +922,11 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
 
             {/* Title and Icon */}
             <div className="relative flex items-center justify-between gap-2">
-              <h3 className="text-[18px] font-bold flex-1">
+              <h3 className="text-[15px] sm:text-[16px] lg:text-[18px] font-bold flex-1 line-clamp-2">
                 {title}
               </h3>
-              <div className="w-[28px] h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center rotate-90 scale-y-[-1] shadow-[0px_0px_10px_0px_#FFC4ED]">
-                <ExternalLink className="w-[16px] h-[16px] text-black rotate-180 scale-y-[-1]" strokeWidth={3} />
+              <div className="w-[24px] h-[24px] sm:w-[28px] sm:h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center rotate-90 scale-y-[-1] shadow-[0px_0px_10px_0px_#FFC4ED] flex-shrink-0">
+                <ExternalLink className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] text-black rotate-180 scale-y-[-1]" strokeWidth={3} />
               </div>
             </div>
           </div>
@@ -823,7 +940,7 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
             transform: 'rotateY(180deg)'
           }}
         >
-          <div className="bg-gradient-to-r from-[#313131] to-[#313131] rounded-[20px] p-4 h-full flex flex-col gap-4 overflow-hidden">
+          <div className="bg-gradient-to-r from-[#313131] to-[#313131] rounded-[16px] sm:rounded-[20px] p-3 sm:p-4 h-full flex flex-col gap-3 sm:gap-4 overflow-hidden">
             {/* Gradient overlays */}
             <div className="absolute inset-0 opacity-[0.13] pointer-events-none">
               <div 
@@ -839,23 +956,23 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
             </div>
 
             {/* Title */}
-            <h3 className="relative text-[18px] font-bold pt-2">
+            <h3 className="relative text-[15px] sm:text-[16px] lg:text-[18px] font-bold pt-1 sm:pt-2">
               {title}
             </h3>
 
             {/* Description */}
-            <div className="relative flex-1 overflow-y-auto">
-              <p className="text-[14px] text-justify leading-relaxed">
+            <div className="relative flex-1 overflow-y-auto pr-1">
+              <p className="text-[12px] sm:text-[13px] lg:text-[14px] text-justify leading-relaxed">
                 {description}
               </p>
             </div>
 
             {/* Tools */}
-            <div className="relative flex gap-2 flex-wrap">
+            <div className="relative flex gap-2 flex-wrap items-center">
               {tools.map((tool, idx) => (
                 <span
                   key={idx}
-                  className="px-[10px] py-[5px] rounded-[10px] text-[12px] font-bold bg-[rgba(255,196,237,0.4)] border border-[rgba(255,255,255,0.5)] shadow-[0px_-1px_80px_0px_inset_rgba(255,196,237,0.2)]"
+                  className="px-[8px] sm:px-[10px] py-[4px] sm:py-[5px] rounded-[8px] sm:rounded-[10px] text-[11px] sm:text-[12px] font-bold bg-[rgba(255,196,237,0.4)] border border-[rgba(255,255,255,0.5)] shadow-[0px_-1px_80px_0px_inset_rgba(255,196,237,0.2)]"
                 >
                   {tool}
                 </span>
@@ -864,9 +981,9 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto w-[28px] h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center hover:scale-110 transition-transform shadow-[0px_0px_10px_0px_#FFC4ED]"
+                className="ml-auto w-[24px] h-[24px] sm:w-[28px] sm:h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center hover:scale-110 transition-transform shadow-[0px_0px_10px_0px_#FFC4ED] flex-shrink-0"
               >
-                <ExternalLink className="w-[16px] h-[16px] text-black" strokeWidth={3} />
+                <ExternalLink className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] text-black" strokeWidth={3} />
               </a>
             </div>
           </div>
