@@ -10,8 +10,21 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('hero');
   const [expandedCertificate, setExpandedCertificate] = useState<number | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   console.log('Mobile menu state:', isMobileMenuOpen);
+
+  // Check for success parameter in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      setShowSuccessMessage(true);
+      // Remove the success parameter from URL
+      window.history.replaceState({}, '', window.location.pathname);
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,8 +92,8 @@ export default function Home() {
 
   // About data
   const aboutData = {
-    description: "I am an information systems student with a strong interest in designing effective, user-centered digital solutions. I combine my skills in UI/UX design and web development using CSS, HTML, ReactJS and Figma to create some experiences that are not only visually appealing but also functional and easy to use.",
-    cvLink: "/cv.pdf",
+    description: "Aspiring UI/UX Designer specializing in user-centered mobile and web application design. Information Systems student at UPN \"Veteran\" Yogyakarta with hands-on experience in user research, wireframing, prototyping, and usability testing using Figma (Advanced), Adobe Illustrator, and front-end technologies (HTML/CSS, Tailwind CSS). Seeking opportunities to create intuitive digital experiences through design thinking methodology and collaborative problem-solving. Proven ability to translate user needs into functional, visually appealing solutions with measurable impact.",
+    cvLink: "assets/icon/cv.pdf",
     tools: ["Figma", "HTML", "CSS", "Laravel"]
   };
 
@@ -95,21 +108,21 @@ export default function Home() {
   const certificates = [
     {
       title: "Certificate of Participation - Techfest UI/UX 2025",
-      image: "/assets/icon/techfest.png",
-      description: "...",
-      downloadLink: "assets/icon/techfest.png"
+      image: "/assets/icon/techfest.webp",
+      description: "Designed high-fidelity prototype for SOBAT application using Figma with 50+ screens and interactive components.",
+      downloadLink: "assets/icon/techfest.webp"
     },
     {
       title: "BEM FTI Organization Certificate",
-      image: "/assets/icon/BEMFTI.png",
+      image: "/assets/icon/BEMFTI.webp",
       description: "FTI LINK is a project of BEM FTI UPN “Veteran” Yogyakarta. The project establishes BEM FTI's external relations with various agencies and builds a sustainable cooperation network.",
-      downloadLink: "/assets/icon/BEMFTI.png"
+      downloadLink: "/assets/icon/BEMFTI.webp"
     },
     {
       title: "Certificate of Achievement – 1st Honorable Mention UI/UX Luminux 2025",
-      image: "/assets/icon/Luminux.png",
-      description: "..",
-      downloadLink: "/assets/icon/Luminux.png"
+      image: "/assets/icon/Luminux.webp",
+      description: "Designed comprehensive UI/UX solution with 50+ screens integrating wearable devices, Machine Learning, and Generative AI to help asthma patients monitor health conditions in real-time, predict attacks, and build healthy habits.",
+      downloadLink: "/assets/icon/Luminux.webp"
     }
   ];
 
@@ -117,29 +130,54 @@ export default function Home() {
   const projects = [
     {
       title: "Website Design Rumah Catering",
-      thumbnail: "/assets/icon/CATERING.png",
+      thumbnail: "/assets/icon/CATERING.webp",
       description: "Rumah Catering is a business that provides food services for individual orders as well as elementary and junior high school students. Previously, the ordering process was done manually via WhatsApp or by visiting the location in person. With this system, customers can place orders online and submit information regarding student attendance or absence. The owner can verify the data entered, and the system automatically calculates the number of portions and monthly catering costs. This system helps streamline order management and simplifies the process of compiling reports.",
       tools: ["Figma"],
       link: "#"
     },
     {
       title: "Mobile Application Design SOBAT",
-      thumbnail: "assets/icon/SOBAT.png",
+      thumbnail: "assets/icon/SOBAT.webp",
       description: "Sahabat Budaya Anak Tangguh (SOBAT) is a mobile application for introducing Indonesian culture through gamification that is fun, inclusive, and adaptive for children aged 6-12 years. Cultural introduction is packaged through a combination of folk tales, traditional clothing, local cuisine, traditional houses, dances, batik, and musical instruments in interactive games. Games such as drawing, coloring, arranging letters into words, and memory cards are designed to actively engage children.",
       tools: ["Figma"],
       link: "#"
     },
     {
       title: "Mobile Application Design Nafasku",
-      thumbnail: "assets/icon/nafaskuu.png",
-      description: "..",
+      thumbnail: "assets/icon/nafaskuu.webp",
+      description: "Designed end-to-end UI/UX for NafasKu, an AI-powered asthma monitoring application integrated with wearable devices, Machine Learning, and Generative AI to help asthma patients monitor health conditions in real-time, predict asthma attacks, and promote healthy lifestyle habits. Responsible for conducting user research, solution ideation, and creating high-fidelity prototypes with 50+ screens using Figma",
       tools: ["Figma"],
-      link: "#"
+      link: "https://www.figma.com/proto/QIuDUcK7nHFHcwPrnmVRiZ/LUMINUX?node-id=274-202&p=f&t=wzO5W7WWxswd5Mdd-1&scaling=scale-down&content-scaling=fixed&page-id=9%3A8&starting-point-node-id=74%3A73&show-proto-sidebar=1"
     }
   ];
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#262626] text-white">
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-24 right-4 z-[100] animate-slideIn">
+          <div className="bg-gradient-to-r from-[#ffc4ed] to-[#ff9ed8] text-black px-6 py-4 rounded-[14px] shadow-[0px_4px_20px_0px_rgba(255,196,237,0.5)] flex items-center gap-3 max-w-[350px]">
+            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-[#ffc4ed]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-[15px]">Message Sent Successfully!</p>
+              <p className="text-[13px] opacity-90">I'll get back to you soon.</p>
+            </div>
+            <button 
+              onClick={() => setShowSuccessMessage(false)}
+              className="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -159,7 +197,7 @@ export default function Home() {
           {/* Logo */}
           <div className="w-[120px] sm:w-[150px] lg:w-[178px] h-[48px] sm:h-[58px] lg:h-[68px] flex items-center flex-shrink-0">
             <Image 
-              src="/assets/icon/webyla.png" 
+              src="/assets/icon/webyla.webp" 
               alt="Webyla Logo" 
               width={178} 
               height={68}
@@ -309,7 +347,7 @@ export default function Home() {
                 {/* Greeting */}
                 <div className="flex items-center gap-3 sm:gap-4 justify-center lg:justify-start">
                   <Image 
-                    src="/assets/icon/Hi.png" 
+                    src="/assets/icon/Hi.webp" 
                     alt="Hi" 
                     width={72} 
                     height={36}
@@ -439,7 +477,7 @@ export default function Home() {
                 {/* Profile Image Circle */}
                 <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] lg:w-[347px] lg:h-[347px] rounded-full overflow-hidden border-3 sm:border-4 border-[#FFC4ED]">
                   <Image
-                    src="/assets/icon/about.png"
+                    src="/assets/icon/about.webp"
                     alt="about"
                     width={347}
                     height={347}
@@ -472,10 +510,10 @@ export default function Home() {
                 <div className="flex gap-3 sm:gap-4 pt-2 sm:pt-4 justify-center">
                   {aboutData.tools.map((tool, index) => {
                     const toolImages: { [key: string]: string } = {
-                      "Figma": "/assets/icon/figma.png",
-                      "HTML": "/assets/icon/html.png",
-                      "CSS": "/assets/icon/css.png",
-                      "Laravel": "/assets/icon/laravel.png"
+                      "Figma": "/assets/icon/figma.webp",
+                      "HTML": "/assets/icon/html.webp",
+                      "CSS": "/assets/icon/css.webp",
+                      "Laravel": "/assets/icon/laravel.webp"
                     };
                     
                     return (
@@ -485,7 +523,7 @@ export default function Home() {
                         title={tool}
                       >
                         <Image
-                          src={toolImages[tool] || "/assets/icon/figma.png"}
+                          src={toolImages[tool] || "/assets/icon/figma.webp"}
                           alt={tool}
                           width={24}
                           height={24}
@@ -517,7 +555,7 @@ export default function Home() {
             <div className="group">
               <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
-                  src="/assets/icon/vscode.png"
+                  src="/assets/icon/vscode.webp"
                   alt="VS Code"
                   width={70}
                   height={70}
@@ -530,7 +568,7 @@ export default function Home() {
             <div className="group">
               <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
-                  src="/assets/icon/figma.png"
+                  src="/assets/icon/figma.webp"
                   alt="Figma"
                   width={70}
                   height={70}
@@ -543,7 +581,7 @@ export default function Home() {
             <div className="group">
               <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
-                  src="/assets/icon/PremierePro.png"
+                  src="/assets/icon/PremierePro.webp"
                   alt="Premiere Pro"
                   width={70}
                   height={70}
@@ -556,7 +594,7 @@ export default function Home() {
             <div className="group">
               <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
-                  src="/assets/icon/canva.png"
+                  src="/assets/icon/canva.webp"
                   alt="Canva"
                   width={70}
                   height={70}
@@ -569,7 +607,7 @@ export default function Home() {
             <div className="group">
               <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] lg:w-[120px] lg:h-[120px] bg-[rgba(255,255,255,0.1)] border-2 border-[#FFC4ED] rounded-[16px] sm:rounded-[20px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_0px_20px_0px_rgba(255,196,237,0.3)] cursor-pointer p-3 sm:p-4">
                 <Image
-                  src="/assets/icon/Illustrator.png"
+                  src="/assets/icon/Illustrator.webp"
                   alt="Illustrator"
                   width={70}
                   height={70}
@@ -646,7 +684,7 @@ export default function Home() {
               <div className="space-y-3 sm:space-y-4">
                 {[
                   { icon: <Mail className="w-5 h-5 sm:w-6 sm:h-6" />, text: 'bilazahirah.13@gmail.com', type: 'email' },
-                  { icon: <PhoneCall className="w-5 h-5 sm:w-6 sm:h-6" />, text: '+62 857-6807-8603', type: 'phone' }
+                  { icon: <PhoneCall className="w-5 h-5 sm:w-6 sm:h-6" />, text: '+62 813-6837-5553', type: 'phone' }
                 ].map((contact, index) => (
                   <div 
                     key={contact.type}
@@ -684,26 +722,44 @@ export default function Home() {
               <p className="mb-6 sm:mb-8 text-[14px] sm:text-[15px] lg:text-[16px] opacity-80">
                 Fill out the form below and I'll get back to you as soon as possible.
               </p>
-              <form className="space-y-4 sm:space-y-6">
-                {[
-                  { type: 'text', placeholder: 'Name' },
-                  { type: 'email', placeholder: 'Email' }
-                ].map((field, index) => (
-                  <input
-                    key={field.placeholder}
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all text-[14px] sm:text-[15px] lg:text-[16px]"
-                  />
-                ))}
+              <form 
+                action="https://formsubmit.co/bilazahirah.13@gmail.com" 
+                method="POST"
+                className="space-y-4 sm:space-y-6"
+              >
+                {/* FormSubmit Configuration */}
+                <input type="hidden" name="_subject" value="New Contact Form Submission from Portfolio!" />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="_next" value={typeof window !== 'undefined' ? window.location.origin + '/?success=true' : ''} />
+                
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  required
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,255,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all text-[14px] sm:text-[15px] lg:text-[16px]"
+                />
+                
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  required
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all text-[14px] sm:text-[15px] lg:text-[16px]"
+                />
+                
                 <textarea
+                  name="message"
                   placeholder="Message"
                   rows={4}
+                  required
                   className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(55,55,55,0.6)] rounded-[14px] focus:border-[#FFC4ED] focus:outline-none focus:ring-2 focus:ring-[#FFC4ED]/20 transition-all resize-none text-[14px] sm:text-[15px] lg:text-[16px]"
                 />
+                
                 <button
                   type="submit"
-                  className="w-full bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] py-3 sm:py-4 rounded-[14px] font-bold hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] text-[17px] sm:text-[19px]"
+                  className="w-full bg-[rgba(255,255,255,0.1)] border border-[rgba(55,55,55,0.6)] py-3 sm:py-4 rounded-[14px] font-bold hover:bg-[rgba(255,255,255,0.15)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] text-[17px] sm:text-[19px] hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Send Message
                 </button>
@@ -735,6 +791,16 @@ export default function Home() {
             opacity: 1;
           }
         }
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
@@ -743,6 +809,9 @@ export default function Home() {
         }
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-in-out;
+        }
+        .animate-slideIn {
+          animation: slideIn 0.4s ease-out;
         }
         .perspective-1000 {
           perspective: 1000px;
