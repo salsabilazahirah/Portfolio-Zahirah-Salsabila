@@ -108,7 +108,7 @@ export default function Home() {
   const certificates = [
     {
       title: "Certificate of Participation - Techfest UI/UX 2025",
-      image: "/assets/icon/techfest.webp",
+      image: "/assets/icon/Techfest.webp",
       description: "Designed high-fidelity prototype for SOBAT application using Figma with 50+ screens and interactive components.",
       downloadLink: "assets/icon/techfest.webp"
     },
@@ -731,6 +731,7 @@ export default function Home() {
                 <input type="hidden" name="_subject" value="New Contact Form Submission from Portfolio!" />
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="_autoresponse" value="Thank you for contacting me! I'll get back to you as soon as possible." />
                 <input type="hidden" name="_next" value={typeof window !== 'undefined' ? window.location.origin + '/?success=true' : ''} />
                 
                 <input
