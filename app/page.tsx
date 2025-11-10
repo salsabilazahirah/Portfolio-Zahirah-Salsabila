@@ -133,14 +133,14 @@ export default function Home() {
       thumbnail: "/assets/icon/CATERING.webp",
       description: "Rumah Catering is a business that provides food services for individual orders as well as elementary and junior high school students. Previously, the ordering process was done manually via WhatsApp or by visiting the location in person. With this system, customers can place orders online and submit information regarding student attendance or absence. The owner can verify the data entered, and the system automatically calculates the number of portions and monthly catering costs. This system helps streamline order management and simplifies the process of compiling reports.",
       tools: ["Figma"],
-      link: "#"
+      link: "https://www.figma.com/proto/oJ60mgwExNbj7Py4MBVz7R/CATERING?node-id=3-11&p=f&t=jtP2tCI8x1Lu2F4C-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=3%3A11"
     },
     {
       title: "Mobile Application Design SOBAT",
       thumbnail: "assets/icon/SOBAT.webp",
       description: "Sahabat Budaya Anak Tangguh (SOBAT) is a mobile application for introducing Indonesian culture through gamification that is fun, inclusive, and adaptive for children aged 6-12 years. Cultural introduction is packaged through a combination of folk tales, traditional clothing, local cuisine, traditional houses, dances, batik, and musical instruments in interactive games. Games such as drawing, coloring, arranging letters into words, and memory cards are designed to actively engage children.",
       tools: ["Figma"],
-      link: "#"
+      link: "https://www.figma.com/proto/tyrxBCqNojoKE8XMab5SAj/APLIKASI-SOBAT?node-id=959-58725&starting-point-node-id=959%3A58462&t=z0xHmD8mqlsGX95b-1"
     },
     {
       title: "Mobile Application Design Nafasku",
@@ -408,7 +408,7 @@ export default function Home() {
                     <Mail className="w-[24px] h-[24px]" />
                   </a>
                   <a
-                    href="https://github.com/bilazahirah"
+                    href="https://github.com/salsabilazahirah"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] w-[44px] h-[44px] rounded-[10px] flex items-center justify-center hover:bg-[rgba(255,255,255,0.3)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed]"
@@ -995,8 +995,23 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
               <h3 className="text-[15px] sm:text-[16px] lg:text-[18px] font-bold flex-1 line-clamp-2">
                 {title}
               </h3>
-              <div className="w-[24px] h-[24px] sm:w-[28px] sm:h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center rotate-90 scale-y-[-1] shadow-[0px_0px_10px_0px_#FFC4ED] flex-shrink-0">
-                <ExternalLink className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] text-black rotate-180 scale-y-[-1]" strokeWidth={3} />
+              <div className="w-[24px] h-[24px] sm:w-[28px] sm:h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center transition-transform duration-300 shadow-[0px_0px_10px_0px_rgba(255,196,237,0.5)] flex-shrink-0 -rotate-90">
+                <svg 
+                  width="14" 
+                  height="9" 
+                  viewBox="0 0 14 9" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-[12px] h-[8px] sm:w-[14px] sm:h-[9px]"
+                >
+                  <path 
+                    d="M1 1.5L7 7.5L13 1.5" 
+                    stroke="black" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
             </div>
           </div>
@@ -1040,21 +1055,30 @@ function ProjectCard({ title, thumbnail, description, tools, link }: ProjectCard
             {/* Tools */}
             <div className="relative flex gap-2 flex-wrap items-center">
               {tools.map((tool, idx) => (
-                <span
-                  key={idx}
-                  className="px-[8px] sm:px-[10px] py-[4px] sm:py-[5px] rounded-[8px] sm:rounded-[10px] text-[11px] sm:text-[12px] font-bold bg-[rgba(255,196,237,0.4)] border border-[rgba(255,255,255,0.5)] shadow-[0px_-1px_80px_0px_inset_rgba(255,196,237,0.2)]"
-                >
-                  {tool}
-                </span>
+                tool.toLowerCase() === 'figma' ? (
+                  <a
+                    key={idx}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.5)] px-[10px] sm:px-[12px] py-[6px] sm:py-[8px] rounded-[10px] hover:bg-[rgba(255,255,255,0.3)] transition-all shadow-[0px_-2px_3.5px_0px_inset_#ffc4ed] hover:scale-105 duration-300 cursor-pointer"
+                  >
+                    <img 
+                      src="/assets/icon/Vector.png"
+                      alt="Figma"
+                      className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] flex-shrink-0 object-contain"
+                    />
+                    <span className="text-[11px] sm:text-[12px] font-bold text-white">{tool}</span>
+                  </a>
+                ) : (
+                  <span
+                    key={idx}
+                    className="px-[8px] sm:px-[10px] py-[4px] sm:py-[5px] rounded-[8px] sm:rounded-[10px] text-[11px] sm:text-[12px] font-bold bg-[rgba(255,196,237,0.4)] border border-[rgba(255,255,255,0.5)] shadow-[0px_-1px_80px_0px_inset_rgba(255,196,237,0.2)]"
+                  >
+                    {tool}
+                  </span>
+                )
               ))}
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-auto w-[24px] h-[24px] sm:w-[28px] sm:h-[28px] rounded-full bg-[#FFC4ED] flex items-center justify-center hover:scale-110 transition-transform shadow-[0px_0px_10px_0px_#FFC4ED] flex-shrink-0"
-              >
-                <ExternalLink className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] text-black" strokeWidth={3} />
-              </a>
             </div>
           </div>
         </div>
